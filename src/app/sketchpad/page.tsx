@@ -1,8 +1,8 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import DrawingPanel from "@/components/DrawingPanel";
-import fs from "fs";
-import { clear } from "console";
+import axios from 'axios';
+
 const SketchPad = () => {
   const canvasRef = useRef(null);
   const activeColor = "#000000";
@@ -111,6 +111,18 @@ const SketchPad = () => {
       setStartRecording(curr_time.getTime());
     } else {
       setIsRecording(false);
+      try {
+        const response = axios.post('http://localhost:8000/recording', {
+          recording: sessionCanvasDetails
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   const handleMouseUp = () => {
