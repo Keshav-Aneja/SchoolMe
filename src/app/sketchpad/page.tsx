@@ -1,7 +1,6 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import DrawingPanel from "@/components/DrawingPanel";
-import fs from "fs";
 import { clear } from "console";
 const SketchPad = () => {
   const canvasRef = useRef(null);
@@ -50,7 +49,7 @@ const SketchPad = () => {
     ctx.lineWidth = strokeSize; //lineThickness;
     ctx.stroke();
     setPos({ lastX: x, lastY: y });
-    setPositionArray((prevPos: any) => [...prevPos, [x, y]]);
+    setPositionArray((prevPos: any) => [...prevPos, [pos.lastX, pos.lastY]]);
     // lastX = x;
     // lastY = y;
   }
@@ -93,6 +92,8 @@ const SketchPad = () => {
   useEffect(() => {
     clearCanvas();
     console.log(sessionCanvasDetails);
+    const dataToSave = sessionCanvasDetails.slice(1);
+    localStorage.setItem("strokeData", JSON.stringify(dataToSave));
     // fs.write("data.txt", sessionCanvasDetails);
   }, [isRecording]);
 
