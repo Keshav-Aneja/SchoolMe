@@ -1,7 +1,7 @@
 import Image from "next/image"
 export default function Hero(){
 return (
-    <main className="w-full flex h-[90vh] relative flex-col">
+    <main className="w-full flex h-[90vh] relative flex-col ">
         <section className="flex flex-col gap-[1.5rem] absolute top-[50%] translate-y-[-50%]">
         <h1 className="font-bold text-6xl w-[35%]">Best Learning Education Platform in the world</h1>
         <p className="w-[40%] text-xl">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laudantium eum odio vero molestiae quo? Vitae tenetur explicabo facilis quasi. Eveniet omnis non exercitationem! Quos itaque error quas repellendus. Reprehenderit, sint.</p>
