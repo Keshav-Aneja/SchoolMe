@@ -22,7 +22,7 @@ export default function Watch() {
     const ctx = canvas?.getContext("2d");
     if (ctx) {
       ctxRef.current = ctx;
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/recording/uploadget?session_name=${'test'}`, {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/recording/uploadget?session_name=${'test1'}`, {
         headers: {
           'Authorization': `Bearer ${Cookies.get('token')}`
         } 
@@ -70,12 +70,10 @@ export default function Watch() {
 
       (async () => {
         for (let i = 1; i < stroke_length; i++) {
-          const x = strokePoints[i][0];
-          const y = strokePoints[i][1];
+          let x = strokePoints[i][0];
+          let y = strokePoints[i][1];
           if (ctxRef.current) {
-            // If the distance exceeds 100, move to the new point without drawing a line
-
-            // Draw the line if the distance is within the threshold
+      
             ctxRef.current.moveTo(lastX, lastY);
             ctxRef.current.lineTo(x, y);
 
@@ -91,6 +89,8 @@ export default function Watch() {
             await new Promise((resolve) => setTimeout(resolve, delay));
             ctxRef.current.stroke();
           }
+          x=0;
+          y=0
         }
       })();
       ctxRef.current.closePath();

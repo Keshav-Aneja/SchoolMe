@@ -137,8 +137,10 @@ const SketchPad = () => {
       try {
         const response = await axios.post(
           "http://localhost:8000/recording/upload",
+
           {
             recording: sessionCanvasDetails,
+            session_name:'test1'
           },
           {
             headers: {
