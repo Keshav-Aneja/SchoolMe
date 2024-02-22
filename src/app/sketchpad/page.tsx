@@ -112,8 +112,9 @@ const SketchPad = () => {
   };
   useEffect(() => {
     clearCanvas();
-    console.log(sessionCanvasDetails);
     const dataToSave = sessionCanvasDetails.slice(1);
+      console.log(sessionCanvasDetails)
+    console.log(dataToSave)
     localStorage.setItem("strokeData", JSON.stringify(dataToSave));
     // fs.write("data.txt", sessionCanvasDetails);
   }, [isRecording]);
@@ -181,6 +182,15 @@ const SketchPad = () => {
         onClick={handleStartStopRecording}
       >
         {isRecording ? "Stop Recording" : "Start Recording"}
+        <AudioRecorder
+        onRecordingComplete={addAudioElement}
+        audioTrackConstraints={{
+          noiseSuppression: true,
+          echoCancellation: true,
+        }}
+        downloadOnSavePress={true}
+        downloadFileExtension="mp3"
+      />
       </button>
       <canvas
         ref={canvasRef}
@@ -196,15 +206,7 @@ const SketchPad = () => {
         setIsDrawing={setIsDrawing}
         isDrawing={isDrawing}
       />
-      <AudioRecorder
-        onRecordingComplete={addAudioElement}
-        audioTrackConstraints={{
-          noiseSuppression: true,
-          echoCancellation: true,
-        }}
-        downloadOnSavePress={true}
-        downloadFileExtension="webm"
-      />
+     
     </div>
   );
 };
