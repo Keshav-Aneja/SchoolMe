@@ -27,7 +27,6 @@ const SketchPad = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [sessionCanvasDetails, setSessionCanvasDetails] = useState<any>([]);
 
-  // const [wavFile,setWavFile]=useState<Blob>();
   // const [recordingComplete,setRecordingComplete]=useState<boolean>(true);
   // const [transcript,setTranscript]=useState<string>("");
   // const recognitionRef=useRef<any>()
@@ -42,14 +41,27 @@ const SketchPad = () => {
 
   //     ctx.fill();
   //   };
-  const addAudioElement = (blob: Blob) => {
-    console.log('HI')
-    // const url = URL.createObjectURL(blob);
-    // const audio = document.createElement("audio");
-    // audio.src = url;
-    // audio.controls = true;
-    // document.body.appendChild(audio);
-  };
+  const addAudioElement = async (blob: Blob) => {
+    const audioData = Array.from(new Uint8Array(await blob.arrayBuffer()))
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/recording/upload",
+
+        {
+          recording: sessionCanvasDetails,
+          session_name:'test1',
+          audio: audioData,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }  };
   function getMousePos(e: any, canvas: any) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -135,24 +147,7 @@ const SketchPad = () => {
       setStartRecording(curr_time.getTime());
     } else {
       setIsRecording(false);
-      try {
-        const response = await axios.post(
-          "http://localhost:8000/recording/upload",
-
-          {
-            recording: sessionCanvasDetails,
-            session_name:'test1'
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${Cookies.get("token")}`,
-            },
-          }
-        );
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
+      
     }
   };
   const handleMouseUp = () => {
