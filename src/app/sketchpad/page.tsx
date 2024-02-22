@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import DrawingPanel from "@/components/DrawingPanel";
+import { start } from "repl";
 const SketchPad = () => {
   const canvasRef = useRef(null);
   const activeColor = "#000000";
@@ -8,6 +9,15 @@ const SketchPad = () => {
   const [activeBg, setActiveBg] = useState("#000000");
   const [pos, setPos] = useState({ lastX: 0, lastY: 0 });
   const [isDrawing, setIsDrawing] = useState(false);
+  const [startRecording, setStartRecording] = useState<any>(null);
+  const [color, setSelectedColor] = useState("#262626");
+  const [strokeSize, setStrokeSize] = useState(5);
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
+  const [positionArray, setPositionArray] = useState<any>([]);
+  const [strokeData, setStrokeData] = useState<any>({});
+  const [isRecording, setIsRecording] = useState(false);
+  const [sessionCanvasDetails, setSessionCanvasDetails] = useState<any>([]);
   //   const canvas: any = canvasRef.current;
   //   const ctx = canvas?.getContext("2d");
   //   const draw = (ctx: any, xpos: number, ypos: number) => {
@@ -36,24 +46,23 @@ const SketchPad = () => {
     ctx.lineTo(x, y);
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
-    ctx.lineWidth = 5; //lineThickness;
+    ctx.lineWidth = strokeSize; //lineThickness;
     ctx.stroke();
     setPos({ lastX: x, lastY: y });
+    setPositionArray((prevPos: any) => [...prevPos, [x, y]]);
     // lastX = x;
     // lastY = y;
   }
   function draw(e: any, canvas: any, ctx: any) {
     motion(e, canvas, ctx);
     //   ctx.strokeStyle = activeColorItem.getAttribute("data-key");
-    ctx.strokeStyle = "#000000"; //activeColor;
+    ctx.strokeStyle = color; //activeColor;
   }
   function erase(e: any, ctx: any, canvas: any) {
     motion(e, canvas, ctx);
     ctx.strokeStyle = activeBg;
   }
   function paint(e: any, ctx: any) {
-    //   canvas.style.backgroundColor = activeColor;
-    //   activeBackground = activeColor;
     ctx.fillStyle = activeColor;
     setActiveBg(activeColor);
     ctx.beginPath();
@@ -65,51 +74,76 @@ const SketchPad = () => {
     const canvas: any = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     ctxRef.current = ctx;
-    // Our first draw
-    // draw(context, 100, 100); // Initial draw at position (100, 100)
   }, []);
 
-  //   const handleMouseDown = (event: any) => {
-  //     isDrawing.current = true;
-  //     handleMouseMove(event);
-  //   };
-
-  //   const handleMouseMove = (event: any) => {
-  //     const canvas: any = canvasRef.current;
-  //     const context = canvas?.getContext("2d");
-  //     if (context && isDrawing.current) {
-  //       const rect = canvas.getBoundingClientRect();
-  //       const xpos = event.clientX - rect.left;
-  //       const ypos = event.clientY - rect.top;
-  //       draw(context, xpos, ypos);
-  //     }
-  //   };
-
-  //   const handleMouseUp = () => {
-  //     isDrawing.current = false;
-  //   };
   const handleMouseDown = (e: any) => {
     setIsDrawing(true);
     const { x, y } = getMousePos(e, canvasRef.current);
     setPos({ lastX: x, lastY: y });
+    if (isRecording) {
+      const curr_click_time = new Date();
+      const diff = curr_click_time.getTime() - startRecording;
+      setStartTime(diff);
+    }
   };
   const handleMouseMove = (e: any) => {
     if (isDrawing) draw(e, canvasRef.current, ctxRef.current);
   };
-  //   canvas.addEventListener("mouseup", () => (isDrawing = false));
+  useEffect(() => {
+    console.log(strokeData);
+  }, [strokeData]);
+  const handleStartStopRecording = () => {
+    if (!isRecording) {
+      const curr_time = new Date();
+      setIsRecording(true);
+      setStartRecording(curr_time.getTime());
+    } else {
+      setIsRecording(false);
+    }
+  };
+  const handleMouseUp = () => {
+    setIsDrawing(false);
+    if (isRecording) {
+      const curr_click_up_time = new Date();
+      const diff = curr_click_up_time.getTime() - startRecording;
+      setEndTime(diff);
+      setStrokeData({
+        strokeColor: color,
+        strokeSize: strokeSize,
+        startTime,
+        diff,
+        positionArray,
+      });
+    }
+  };
   return (
     <div
       className="canvas-rect w-screen h-screen relative"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
-      onMouseUp={() => setIsDrawing(false)}
+      onMouseUp={handleMouseUp}
     >
+      <button
+        type="button"
+        className="px-4 py-2 bg-black  text-white rounded-full absolute top-4 right-4"
+        onClick={handleStartStopRecording}
+      >
+        {startRecording ? "Stop Recording" : "Start Recording"}
+      </button>
       <canvas
         ref={canvasRef}
         width={window.innerWidth}
         height={window.innerHeight}
       />
-      <DrawingPanel />
+      <DrawingPanel
+        setColor={setSelectedColor}
+        setStrokeSize={setStrokeSize}
+        setStart={setStartTime}
+        setEnd={setEndTime}
+        setPositions={setPositionArray}
+        setIsDrawing={setIsDrawing}
+        isDrawing={isDrawing}
+      />
     </div>
   );
 };
