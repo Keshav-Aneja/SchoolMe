@@ -26,7 +26,7 @@ async function onSubmit(event: FormEvent<HTMLFormElement>) {
             username:username,
             password:password,
             isTeacher:isTeacher,
-            instituition:instituition,
+            institution_name:instituition,
             name:_name,
             email:email
         }
