@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import DrawingPanel from "@/components/DrawingPanel";
 import fs from "fs";
+import { clear } from "console";
 const SketchPad = () => {
   const canvasRef = useRef(null);
   const activeColor = "#000000";
@@ -90,10 +91,19 @@ const SketchPad = () => {
     if (isDrawing) draw(e, canvasRef.current, ctxRef.current);
   };
   useEffect(() => {
+    clearCanvas();
     console.log(sessionCanvasDetails);
     // fs.write("data.txt", sessionCanvasDetails);
   }, [isRecording]);
 
+  const clearCanvas = () => {
+    const ctx = ctxRef.current as CanvasRenderingContext2D | null;
+    const canvas = canvasRef.current;
+
+    if (ctx && canvas) {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+  };
   const handleStartStopRecording = () => {
     if (!isRecording) {
       const curr_time = new Date();
