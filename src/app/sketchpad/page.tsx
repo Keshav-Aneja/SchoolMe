@@ -138,6 +138,7 @@ const SketchPad = () => {
           "http://localhost:8000/recording/upload",
           {
             recording: sessionCanvasDetails,
+            token: Cookies.get("token"),
           },
           {
             headers: {
