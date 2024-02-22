@@ -3,7 +3,6 @@ import { GenericAbortSignal } from 'axios';
 const postHandler = async (URL: string, data: any, signal?: GenericAbortSignal) => {
   const headers = {
     'Content-Type': 'application/json',
-    // Add any other custom headers here if needed
   };
 
   const response: any = {
