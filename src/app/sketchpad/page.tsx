@@ -1,7 +1,15 @@
 "use client";
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+    speechRecognition: any;
+  }
+}
+import { AudioRecorder } from "react-audio-voice-recorder";
 import React, { useRef, useEffect, useState } from "react";
 import DrawingPanel from "@/components/DrawingPanel";
-import { clear } from "console";
+import axios from "axios";
+import Cookies from "js-cookie";
 const SketchPad = () => {
   const canvasRef = useRef(null);
   const activeColor = "#000000";
@@ -18,6 +26,11 @@ const SketchPad = () => {
   const [strokeData, setStrokeData] = useState<any>({});
   const [isRecording, setIsRecording] = useState(false);
   const [sessionCanvasDetails, setSessionCanvasDetails] = useState<any>([]);
+
+  // const [wavFile,setWavFile]=useState<Blob>();
+  // const [recordingComplete,setRecordingComplete]=useState<boolean>(true);
+  // const [transcript,setTranscript]=useState<string>("");
+  // const recognitionRef=useRef<any>()
   //   const canvas: any = canvasRef.current;
   //   const ctx = canvas?.getContext("2d");
   //   const draw = (ctx: any, xpos: number, ypos: number) => {
@@ -29,6 +42,13 @@ const SketchPad = () => {
 
   //     ctx.fill();
   //   };
+  const addAudioElement = (blob: Blob) => {
+    const url = URL.createObjectURL(blob);
+    const audio = document.createElement("audio");
+    audio.src = url;
+    audio.controls = true;
+    // document.body.appendChild(audio);
+  };
   function getMousePos(e: any, canvas: any) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -38,6 +58,7 @@ const SketchPad = () => {
       y: (e.clientY - rect.top) * scaleY,
     };
   }
+
   function motion(e: any, canvas: any, ctx: any) {
     if (!isDrawing) return;
     const { x, y } = getMousePos(e, canvas);
@@ -112,6 +133,22 @@ const SketchPad = () => {
       setStartRecording(curr_time.getTime());
     } else {
       setIsRecording(false);
+      try {
+        const response = axios.post(
+          "http://localhost:8000/recording/upload",
+          {
+            recording: sessionCanvasDetails,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("token")}`,
+            },
+          }
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   const handleMouseUp = () => {
@@ -158,6 +195,15 @@ const SketchPad = () => {
         setPositions={setPositionArray}
         setIsDrawing={setIsDrawing}
         isDrawing={isDrawing}
+      />
+      <AudioRecorder
+        onRecordingComplete={addAudioElement}
+        audioTrackConstraints={{
+          noiseSuppression: true,
+          echoCancellation: true,
+        }}
+        downloadOnSavePress={true}
+        downloadFileExtension="webm"
       />
     </div>
   );
