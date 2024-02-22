@@ -1,8 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-<<<<<<< HEAD
-=======
 
 /* :root {
   --foreground-rgb: 0, 0, 0;
@@ -33,4 +31,8 @@ body {
     text-wrap: balance;
   }
 } */
->>>>>>> 1c143172aba503dfd585c31404d4492ce305dd2a
+
+.canvas-rect {
+  background-image: url("/Backgrround2.png");
+  background-size: 20vw;
+}

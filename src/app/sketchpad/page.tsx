@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
-
+import DrawingPanel from "@/components/DrawingPanel";
 const SketchPad = () => {
   const canvasRef = useRef(null);
   const activeColor = "#000000";
@@ -99,12 +99,17 @@ const SketchPad = () => {
   //   canvas.addEventListener("mouseup", () => (isDrawing = false));
   return (
     <div
-      className="canvas-rect"
+      className="canvas-rect w-screen h-screen relative"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={() => setIsDrawing(false)}
     >
-      <canvas ref={canvasRef} width={1300} height={700} />
+      <canvas
+        ref={canvasRef}
+        width={window.innerWidth}
+        height={window.innerHeight}
+      />
+      <DrawingPanel />
     </div>
   );
 };
