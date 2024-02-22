@@ -8,6 +8,9 @@ export default function Home() {
     <main className="flex flex-col justify-center items-center w-full px-[2rem] bg-white">
     <Navbar/>
     <Hero/>
+    <AboutUs/>
+    <Services/>
+    <Footer/>
     </main>
   );
 }
