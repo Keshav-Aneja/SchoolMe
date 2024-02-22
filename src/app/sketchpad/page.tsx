@@ -1,8 +1,14 @@
 "use client";
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+    speechRecognition:any
+  }
+}
 import React, { useRef, useEffect, useState } from "react";
 import DrawingPanel from "@/components/DrawingPanel";
 import axios from 'axios';
-
+import Cookies from "js-cookie";
 const SketchPad = () => {
   const canvasRef = useRef(null);
   const activeColor = "#000000";
@@ -19,6 +25,10 @@ const SketchPad = () => {
   const [strokeData, setStrokeData] = useState<any>({});
   const [isRecording, setIsRecording] = useState(false);
   const [sessionCanvasDetails, setSessionCanvasDetails] = useState<any>([]);
+  const [wavFile,setWavFile]=useState<Blob>();
+  const [recordingComplete,setRecordingComplete]=useState<boolean>(true);
+  const [transcript,setTranscript]=useState<string>("");
+  const recognitionRef=useRef<any>()
   //   const canvas: any = canvasRef.current;
   //   const ctx = canvas?.getContext("2d");
   //   const draw = (ctx: any, xpos: number, ypos: number) => {
@@ -38,6 +48,19 @@ const SketchPad = () => {
       x: (e.clientX - rect.left) * scaleX,
       y: (e.clientY - rect.top) * scaleY,
     };
+  }
+  const startVoiceRecordingHandler=()=>{
+    const SpeechRecognition = window.speechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current=new SpeechRecognition()
+      recognitionRef.current.continuous=true;
+      recognitionRef.current.interimResults=true;
+      recognitionRef.current.onresult=(event:any)=>{
+        const {transcript}=event.results[event.results.length-1][0];
+        setTranscript(transcript)
+        console.log(transcript)
+      }
+      recognitionRef.current.start()
+
   }
   function motion(e: any, canvas: any, ctx: any) {
     if (!isDrawing) return;
@@ -92,7 +115,7 @@ const SketchPad = () => {
   };
   useEffect(() => {
     clearCanvas();
-    console.log(sessionCanvasDetails);
+    // console.log(sessionCanvasDetails);
     // fs.write("data.txt", sessionCanvasDetails);
   }, [isRecording]);
 
@@ -106,23 +129,24 @@ const SketchPad = () => {
   };
   const handleStartStopRecording = () => {
     if (!isRecording) {
+      startVoiceRecordingHandler()
       const curr_time = new Date();
       setIsRecording(true);
       setStartRecording(curr_time.getTime());
     } else {
       setIsRecording(false);
-      try {
-        const response = axios.post('http://localhost:8000/recording', {
-          recording: sessionCanvasDetails
-        }, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        })
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
+      // try {
+      //   const response = axios.post('http://localhost:8000/recording/upload', {
+      //     recording: sessionCanvasDetails
+      //   }, {
+      //     headers: {
+      //       Authorization: Bearer ${Cookies.get('token')}
+      //     }
+      //   })
+      //   console.log(response);
+      // } catch (error) {
+      //   console.log(error);
+      // }
     }
   };
   const handleMouseUp = () => {
