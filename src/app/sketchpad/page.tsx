@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import DrawingPanel from "@/components/DrawingPanel";
-import { start } from "repl";
+import fs from "fs";
 const SketchPad = () => {
   const canvasRef = useRef(null);
   const activeColor = "#000000";
@@ -90,8 +90,10 @@ const SketchPad = () => {
     if (isDrawing) draw(e, canvasRef.current, ctxRef.current);
   };
   useEffect(() => {
-    console.log(strokeData);
-  }, [strokeData]);
+    console.log(sessionCanvasDetails);
+    // fs.write("data.txt", sessionCanvasDetails);
+  }, [isRecording]);
+
   const handleStartStopRecording = () => {
     if (!isRecording) {
       const curr_time = new Date();
@@ -107,13 +109,15 @@ const SketchPad = () => {
       const curr_click_up_time = new Date();
       const diff = curr_click_up_time.getTime() - startRecording;
       setEndTime(diff);
-      setStrokeData({
+      const strokeObj = {
         strokeColor: color,
         strokeSize: strokeSize,
         startTime,
-        diff,
+        endTime: diff,
         positionArray,
-      });
+      };
+      setStrokeData(strokeObj);
+      setSessionCanvasDetails((prevDet: any) => [...prevDet, strokeObj]);
     }
   };
   return (
@@ -128,7 +132,7 @@ const SketchPad = () => {
         className="px-4 py-2 bg-black  text-white rounded-full absolute top-4 right-4"
         onClick={handleStartStopRecording}
       >
-        {startRecording ? "Stop Recording" : "Start Recording"}
+        {isRecording ? "Stop Recording" : "Start Recording"}
       </button>
       <canvas
         ref={canvasRef}

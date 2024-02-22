@@ -19,7 +19,7 @@ const DrawingPanel = ({
   isDrawing,
 }: Props) => {
   return (
-    <div className="w-[60%] h-24 rounded-3xl border-[1px] border-[#aeaeae] shadow-lg absolute bottom-12 left-1/2 -translate-x-1/2 bg-white overflow-hidden px-4 pt-2 flex gap-4">
+    <div className="w-fit h-24 rounded-3xl border-[1px] border-[#aeaeae] shadow-lg absolute bottom-12 left-1/2 -translate-x-1/2 bg-white overflow-hidden px-4 pt-2 flex gap-4">
       <Image
         src="/pencil.png"
         alt="pencil"
