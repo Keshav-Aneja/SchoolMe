@@ -43,10 +43,11 @@ const SketchPad = () => {
   //     ctx.fill();
   //   };
   const addAudioElement = (blob: Blob) => {
-    const url = URL.createObjectURL(blob);
-    const audio = document.createElement("audio");
-    audio.src = url;
-    audio.controls = true;
+    console.log('HI')
+    // const url = URL.createObjectURL(blob);
+    // const audio = document.createElement("audio");
+    // audio.src = url;
+    // audio.controls = true;
     // document.body.appendChild(audio);
   };
   function getMousePos(e: any, canvas: any) {
@@ -190,7 +191,7 @@ const SketchPad = () => {
           noiseSuppression: true,
           echoCancellation: true,
         }}
-        downloadOnSavePress={true}
+        downloadOnSavePress={false}
         downloadFileExtension="mp3"
       />
       </button>
