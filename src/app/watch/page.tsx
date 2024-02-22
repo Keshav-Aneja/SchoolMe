@@ -1,5 +1,7 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
 interface StrokeData {
   startTime: number;
   endTime: number;
@@ -15,16 +17,25 @@ export default function Watch() {
   const [strokeNum, setStrokeNum] = useState(0);
 
   useEffect(() => {
+   const f=async()=>{
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (ctx) {
       ctxRef.current = ctx;
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/recording/uploadget?session_name=${'test'}`, {
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        } 
+      })
+      console.log(res)  
       const storedData = localStorage.getItem("strokeData");
       if (storedData) {
         const parsedStrokeData: StrokeData[] = JSON.parse(storedData);
         setStrokeData(parsedStrokeData);
       }
     }
+   }
+   f()
   }, []);
   useEffect(() => {
     const strokeDataLength = strokeData?.length;

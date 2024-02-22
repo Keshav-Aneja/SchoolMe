@@ -127,7 +127,7 @@ const SketchPad = () => {
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
     }
   };
-  const handleStartStopRecording = () => {
+  const handleStartStopRecording = async() => {
     if (!isRecording) {
       const curr_time = new Date();
       setIsRecording(true);
@@ -135,11 +135,10 @@ const SketchPad = () => {
     } else {
       setIsRecording(false);
       try {
-        const response = axios.post(
+        const response = await axios.post(
           "http://localhost:8000/recording/upload",
           {
             recording: sessionCanvasDetails,
-            token: Cookies.get("token"),
           },
           {
             headers: {
